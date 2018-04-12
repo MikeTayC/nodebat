@@ -10,7 +10,7 @@ const jsonParse = require('js2xmlparser');
  * @param data
  * @returns {}
  */
-function assignChildren(data) {
+function transform(data) {
     var allProds = data.row;
     var updateProds = [];
     allProds.forEach(function(element){
@@ -67,23 +67,23 @@ function assignChildren(data) {
 
 }
 
-function editImages(data) {
-    var allProds = data.row;
-    var updateProds = [];
-
-    allProds.forEach(function(element){
-        var image = element.image.split('\\').pop().split('/').pop() ;
-        if(image.length !== 0) {
-            element.images = [];
-            var imageObj = {imageFilename: image};
-            element.images.push(imageObj);
-        }
-        updateProds.push(element);
-
-    });
-    data.row = updateProds;
-    return data;
-}
+// function editImages(data) {
+//     var allProds = data.row;
+//     var updateProds = [];
+//
+//     allProds.forEach(function(element){
+//         var image = element.image.split('\\').pop().split('/').pop() ;
+//         if(image.length !== 0) {
+//             element.images = [];
+//             var imageObj = {imageFilename: image};
+//             element.images.push(imageObj);
+//         }
+//         updateProds.push(element);
+//
+//     });
+//     data.row = updateProds;
+//     return data;
+// }
 getStdin().then(function(csvString) {
     const converter = new Converter({
         delimiter: "auto",
@@ -97,9 +97,9 @@ getStdin().then(function(csvString) {
         if (_.isNil(err) && result.length > 0) {
         const jsonString = JSON.stringify({row: result});
         var object = JSON.parse(jsonString);
-        var transformedObject = assignChildren(object);
+        var transformedObject = transform(object);
 
-        transformedObject = editImages(transformedObject);
+        // transformedObject = editImages(transformedObject);
         const xmlString = jsonParse.parse('csv_root_node', transformedObject);
         libxslt.parseFile('./products_master.xsl', function (err, stylesheet) {
             if(err) {
